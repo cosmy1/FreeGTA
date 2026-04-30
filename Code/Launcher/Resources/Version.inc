@@ -1,0 +1,15 @@
+#include "GlobalVersion.h"
+
+#define INTERNAL_FILETYPE_EXE           0x1L
+#define INTERNAL_FILETYPE_DLL           0x2L
+
+#define INTERNAL_VERSION_MAJOR          FREEGTA_VERSION_MAJOR
+#define INTERNAL_VERSION_MINOR          FREEGTA_VERSION_MINOR
+#define INTERNAL_VERSION_BUILD          FREEGTA_VERSION_BUILD
+#define INTERNAL_VERSION_MODIFICATION   0
+
+#define INTERNAL_COPYRIGHT_LINE         "Copyright (c) 2021-2026 cosmy1"
+#define INTERNAL_PROJECT_NAME           "FreeGTA Launcher"
+#define INTERNAL_FILENAME               "Launcher.EXE"
+
+#define INTERNAL_FILETYPE               INTERNAL_FILETYPE_EXE

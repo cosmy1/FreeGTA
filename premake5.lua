@@ -60,6 +60,8 @@ function projectCommon(projName)
         symbolspath("$(OutDir)$(TargetName).pdb")
         
     filter { }
+
+    includedirs { "Code" }
 end
 
 workspace("FreeGTA")
@@ -74,6 +76,7 @@ workspace("FreeGTA")
         projectCommon("Launcher")
         
         files {
+            "Code/Launcher/Resources/*.*",
             "Code/Launcher/*.*"
         }
         
@@ -83,6 +86,7 @@ workspace("FreeGTA")
         projectCommon("dplayx")
         
         files {
+            "Code/DPlayX/Resources/*.*",
             "Code/DPlayX/*.*",
         }
 
@@ -92,6 +96,7 @@ workspace("FreeGTA")
         projectCommon("FreeGTA")
 
         files {
+            "Code/FreeGTA/Resources/*.*",
             "Code/FreeGTA/*.*"
         }
         
