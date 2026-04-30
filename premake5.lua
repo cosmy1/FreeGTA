@@ -75,3 +75,12 @@ workspace("FreeGTA")
             "Code/Launcher/*.*"
         }
         
+    -- Game Project (DLL)
+    project("FreeGTA")
+        kind("SharedLib")
+        projectCommon("FreeGTA")
+
+        files {
+            "Code/FreeGTA/*.*"
+        }
+        

@@ -16,36 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 **********************************************************************/
 
-#include <stdio.h>
 #include <Windows.h>
 
-#define __EXE "WINO\\Grand Theft Auto.exe"
-
-#ifdef _DEBUG
-#   define __DLL "FreeGTA_d.dll"
-#else
-#   define __DLL "FreeGTA.dll"
-#endif
-
-bool InjectDll(const char* dll, const char* targetPath)
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
-	return true;
-}
-
-int main(int argc, char* argv[])
-{
-	printf("FreeGTA Launcher\n");
-	printf("Injecting '%s' in '%s' process...\n", __DLL, __EXE);
-	
-	bool result = InjectDll(__DLL, __EXE);
-	
-	if (!result)
-	{
-		printf("Failed to inject the DLL.\n");
-		return 1;
-	}
-
-	printf("DLL injected successfully.\n");
-
-	return 0;
+    return TRUE;
 }
