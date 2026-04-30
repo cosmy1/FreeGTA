@@ -75,6 +75,15 @@ workspace("FreeGTA")
             "Code/Launcher/*.*"
         }
         
+    -- DPlay Wrapper Project (DLL)
+    project("dplayx")
+        kind("SharedLib")
+        projectCommon("dplayx")
+        
+        files {
+            "Code/DPlayX/*.*",
+        }
+
     -- Game Project (DLL)
     project("FreeGTA")
         kind("SharedLib")
