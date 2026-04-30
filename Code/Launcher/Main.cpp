@@ -19,7 +19,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <Windows.h>
 
-#define __EXE "WINO\\Grand Theft Auto.exe"
+#define MAXWAIT 10000
+
+#define __EXE "GTA\\WINO\\Grand Theft Auto.exe"
 
 #ifdef _DEBUG
 #   define __DLL "FreeGTA_d.dll"
@@ -27,9 +29,106 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #   define __DLL "FreeGTA.dll"
 #endif
 
-bool InjectDll(const char* dll, const char* targetPath)
+static bool FileExists(const char* path)
 {
-	return true;
+	DWORD attrib = GetFileAttributes(path);
+	return (attrib != INVALID_FILE_ATTRIBUTES && !(attrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+static bool InjectDll(const char* dll, const char* targetPath, DWORD* lastErrorCode)
+{
+	if (!FileExists(dll) || !FileExists(targetPath))
+	{
+		if (lastErrorCode)
+			*lastErrorCode = ERROR_FILE_NOT_FOUND;
+		return false;
+	}
+
+	HMODULE moduleHandle = GetModuleHandle("kernel32.dll");
+
+	if (!moduleHandle)
+	{
+		if (lastErrorCode)
+			*lastErrorCode = GetLastError();
+		return false;
+	}
+
+	LPVOID loadLibraryPtr = GetProcAddress(moduleHandle, "LoadLibraryA");
+
+	if (!loadLibraryPtr)
+	{
+		if (lastErrorCode)
+			*lastErrorCode = GetLastError();
+		return false;
+	}
+
+	STARTUPINFO startupInfo;
+	PROCESS_INFORMATION processInformation;
+
+	memset(&startupInfo, 0, sizeof(startupInfo));
+	startupInfo.cb = sizeof(STARTUPINFO);
+
+	if (!CreateProcess(targetPath, NULL, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &startupInfo, &processInformation))
+	{
+		if (lastErrorCode)
+			*lastErrorCode = GetLastError();
+		return false;
+	}
+
+	size_t length = strlen(dll) * sizeof(char);
+	LPVOID remoteString = VirtualAllocEx(processInformation.hProcess, NULL, length + 1, MEM_COMMIT, PAGE_READWRITE);
+	
+	if (!remoteString)
+	{
+		CloseHandle(processInformation.hProcess);
+		CloseHandle(processInformation.hThread);
+
+		if (lastErrorCode)
+			*lastErrorCode = GetLastError();
+		return false;
+	}
+
+	if (!WriteProcessMemory(processInformation.hProcess, remoteString, dll, length, NULL))
+	{
+		VirtualFreeEx(processInformation.hProcess, remoteString, 0, MEM_RELEASE);
+		CloseHandle(processInformation.hProcess);
+		CloseHandle(processInformation.hThread);
+
+		if (lastErrorCode)
+			*lastErrorCode = GetLastError();
+		return false;
+	}
+
+	HANDLE remoteThread = CreateRemoteThread(processInformation.hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)loadLibraryPtr, remoteString, 0, NULL);
+
+	if (!remoteThread)
+	{
+		VirtualFreeEx(processInformation.hProcess, remoteString, 0, MEM_RELEASE);
+		CloseHandle(processInformation.hProcess);
+		CloseHandle(processInformation.hThread);
+
+		if (lastErrorCode)
+			*lastErrorCode = GetLastError();
+		return false;
+	}
+
+	if (WaitForSingleObject(remoteThread, MAXWAIT) != WAIT_TIMEOUT)
+	{
+		ResumeThread(processInformation.hThread);
+		VirtualFreeEx(processInformation.hProcess, remoteString, 0, MEM_RELEASE);
+		CloseHandle(processInformation.hProcess);
+		CloseHandle(processInformation.hThread);
+
+		return true;
+	}
+
+	VirtualFreeEx(processInformation.hProcess, remoteString, 0, MEM_RELEASE);
+	CloseHandle(processInformation.hProcess);
+	CloseHandle(processInformation.hThread);
+
+	if (lastErrorCode)
+		*lastErrorCode = ERROR_TIMEOUT;
+	return false;
 }
 
 int main(int argc, char* argv[])
@@ -37,11 +136,12 @@ int main(int argc, char* argv[])
 	printf("FreeGTA Launcher\n");
 	printf("Injecting '%s' in '%s' process...\n", __DLL, __EXE);
 	
-	bool result = InjectDll(__DLL, __EXE);
+	DWORD lastErrorCode = 0;
+	bool success = InjectDll(__DLL, __EXE, &lastErrorCode);
 	
-	if (!result)
+	if (!success)
 	{
-		printf("Failed to inject the DLL.\n");
+		printf("Failed to inject the DLL (LastError: 0x%08x).\n", lastErrorCode);
 		return 1;
 	}
 
