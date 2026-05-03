@@ -16,20 +16,10 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "ErrorHandler.h"
+#include <Windows.h>
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <time.h>
-
-typedef int8_t      INT8;
-typedef uint8_t     UINT8;
-typedef int16_t     INT16;
-typedef uint16_t    UINT16;
-typedef int32_t     INT32;
-typedef uint32_t    UINT32;
-typedef int64_t     INT64;
-typedef uint64_t    UINT64;
-typedef float       FLOAT;
-typedef double      DOUBLE;
+void ErrorHandler::DebuggerPrint(const char* str)
+{
+    OutputDebugString(str);
+}

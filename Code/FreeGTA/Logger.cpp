@@ -16,20 +16,38 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "Logger.h"
+#include "ErrorHandler.h"
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <time.h>
+static Logger* g_logger = NULL;
 
-typedef int8_t      INT8;
-typedef uint8_t     UINT8;
-typedef int16_t     INT16;
-typedef uint16_t    UINT16;
-typedef int32_t     INT32;
-typedef uint32_t    UINT32;
-typedef int64_t     INT64;
-typedef uint64_t    UINT64;
-typedef float       FLOAT;
-typedef double      DOUBLE;
+Logger::Logger()
+{
+    m_file = NULL;
+    g_logger = this;
+}
+
+Logger::~Logger()
+{
+    Close();
+    g_logger = NULL;
+}
+
+void Logger::Open(const char* fileName)
+{
+    Close();
+
+    if (fileName != NULL)
+        fopen_s(&m_file, fileName, "w");
+}
+
+void Logger::Close()
+{
+    if (IsFileOpen())
+        fclose(m_file);
+}
+
+bool Logger::IsFileOpen() const
+{
+    return m_file != NULL;
+}
