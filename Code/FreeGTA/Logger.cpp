@@ -19,9 +19,11 @@
 #include "Logger.h"
 #include "ErrorHandler.h"
 
-static Logger* g_logger = NULL;
+const UINT32    kMaxLogBufferSize = 2048;
+static Logger*  g_logger = NULL;
 
-Logger::Logger()
+Logger::Logger() :
+    m_logLevelType(LogLevelType::LLT_DEBUG)
 {
     m_file = NULL;
     g_logger = this;
@@ -50,4 +52,73 @@ void Logger::Close()
 bool Logger::IsFileOpen() const
 {
     return m_file != NULL;
+}
+
+FILE* Logger::GetFilePointer() const
+{
+    return m_file;
+}
+
+void Logger::SetLogLevelType(const LogLevelType& logLevelType)
+{
+    m_logLevelType = logLevelType;
+}
+
+LogLevelType Logger::GetLogLevelType() const
+{
+    return m_logLevelType;
+}
+
+void Logger::Log(const LogLevelType& logLevelType, const char* fmt, ...)
+{
+    if (!g_logger || g_logger->GetLogLevelType() > logLevelType)
+        return;
+
+    const char* tag = NULL;
+    const char* nl = "";
+
+    switch (logLevelType)
+    {
+    case LogLevelType::LLT_DEBUG:
+        tag = "[DEBUG]";
+        break;
+    case LogLevelType::LLT_INFO:
+        tag = "[INFO]";
+        break;
+    case LogLevelType::LLT_WARNING:
+        tag = "[WARNING]";
+        break;
+    case LogLevelType::LLT_ERROR:
+        tag = "[ERROR]";
+        break;
+    case LogLevelType::LLT_FATAL:
+        tag = "[FATAL]";
+        nl = "\n\n";
+        break;
+    default:
+        tag = "";
+    }
+
+    va_list args;
+    char buffer[kMaxLogBufferSize - 256];
+    va_start(args, fmt);
+    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+
+    time_t rawTime;
+    struct tm* timeInfo;
+
+    time(&rawTime);
+    timeInfo = localtime(&rawTime);
+
+    char msg[kMaxLogBufferSize];
+
+    snprintf(msg, sizeof(msg), "[%04u-%02u-%02u %02u:%02u:%02u]%s : %s%s\n",
+        timeInfo->tm_year + 1900, timeInfo->tm_mon + 1, timeInfo->tm_mday,
+        timeInfo->tm_hour, timeInfo->tm_min, timeInfo->tm_sec, tag, nl, buffer);
+
+    ErrorHandler::DebuggerPrint(msg);
+
+    if (g_logger->IsFileOpen())
+        fprintf(g_logger->GetFilePointer(), msg);
 }

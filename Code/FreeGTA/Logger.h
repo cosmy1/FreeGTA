@@ -20,6 +20,16 @@
 
 #include "Utils.h"
 
+enum LogLevelType
+{
+    LLT_DEBUG = 0,
+    LLT_INFO,
+    LLT_WARNING,
+    LLT_ERROR,
+    LLT_FATAL,
+    LLT_NONE
+};
+
 class Logger
 {
 public:
@@ -30,7 +40,20 @@ public:
     void Close();
 
     bool IsFileOpen() const;
+    FILE* GetFilePointer() const;
+
+    void SetLogLevelType(const LogLevelType& logLevelType);
+    LogLevelType GetLogLevelType() const;
+
+    static void Log(const LogLevelType& logLevelType, const char* fmt, ...);
 
 private:
     FILE* m_file;
+    LogLevelType m_logLevelType;
 };
+
+#define FREEGTA_LOGDEBUG(...)   Logger::Log(LogLevelType::LLT_DEBUG,    __VA_ARGS__)
+#define FREEGTA_LOGINFO(...)    Logger::Log(LogLevelType::LLT_INFO,     __VA_ARGS__)
+#define FREEGTA_LOGWARNING(...) Logger::Log(LogLevelType::LLT_WARNING,  __VA_ARGS__)
+#define FREEGTA_LOGERROR(...)   Logger::Log(LogLevelType::LLT_ERROR,    __VA_ARGS__)
+#define FREEGTA_LOGFATAL(...)   Logger::Log(LogLevelType::LLT_FATAL,    __VA_ARGS__)

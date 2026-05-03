@@ -16,9 +16,36 @@
 *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "Logger.h"
+#include "ErrorHandler.h"
 #include <Windows.h>
+
+Logger* g_loggerInstance = NULL;
+
+BOOL CustomDllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
+{
+    if (fdwReason == DLL_PROCESS_ATTACH)
+    {
+        g_loggerInstance = new Logger();
+        g_loggerInstance->Open("FreeGTA.log");
+
+        FREEGTA_LOGINFO("FreeGTA starting...");
+
+        DisableThreadLibraryCalls(hinstDLL);
+
+        FREEGTA_LOGINFO("FreeGTA started!");
+    }
+    else if (fdwReason == DLL_PROCESS_DETACH)
+    {
+        FREEGTA_LOGINFO("FreeGTA shut-down!");
+
+        delete g_loggerInstance;
+    }
+
+    return TRUE;
+}
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
-    return TRUE;
+    return CustomDllMain(hinstDLL, fdwReason, lpReserved);
 }
