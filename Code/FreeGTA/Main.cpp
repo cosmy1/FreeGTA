@@ -47,5 +47,12 @@ BOOL CustomDllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
-    return CustomDllMain(hinstDLL, fdwReason, lpReserved);
+    __try
+    {
+        return CustomDllMain(hinstDLL, fdwReason, lpReserved);
+    }
+    __except (ErrorHandler::WriteMiniDump("FreeGTA", GetExceptionInformation()))
+    {
+        ErrorHandler::CrashHandler();
+    }
 }

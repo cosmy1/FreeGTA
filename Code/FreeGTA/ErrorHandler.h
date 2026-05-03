@@ -30,4 +30,20 @@ class ErrorHandler
 {
 public:
     static void DebuggerPrint(const char* str);
+    static bool IsDebuggerAttached();
+
+    static void AssertHandler(const char* expr, const char* fileName, INT32 line, const char* fmt, ...);
+    static void FatalErrorHandler(const char* fileName, INT32 line, const char* fmt, ...);
+
+    static const char* GetMinidumpErrorDescription();
+    static INT32 WriteMiniDump(const char* appName, void* exceptionPointers);
+    static void CrashHandler();
+
+private:
+    static bool m_errorActive;
+    static INT8 m_minidumpError;
 };
+
+#define FREEGTA_ASSERT(EXP)         { if(!(EXP)) ErrorHandler::AssertHandler(#EXP, __FILE__, __LINE__, NULL); }
+#define FREEGTA_ASSERT_F(EXP, ...)  { if(!(EXP)) ErrorHandler::AssertHandler(#EXP, __FILE__, __LINE__, __VA_ARGS__); }
+#define FREEGTA_FATAL_ERROR(...)    { ErrorHandler::FatalErrorHandler(__FILE__, __LINE__, __VA_ARGS__); }
