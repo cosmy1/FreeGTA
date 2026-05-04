@@ -24,7 +24,31 @@
 // Implementation
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+HMODULE(WINAPI* OriginalLoadLibraryA)(LPCSTR lpLibFileName);
+FARPROC(WINAPI* OriginalGetProcAddress)(HMODULE hModule, LPCSTR lpProcName);
 int(WINAPI* OriginalMessageBoxA)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
+
+HMODULE WINAPI DetourLoadLibraryA(LPCSTR lpLibFileName)
+{
+    HMODULE module = OriginalLoadLibraryA(lpLibFileName);
+
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("GTA: LoadLibraryA(%s) = 0x%08x", lpLibFileName, module);
+#endif
+
+    return module;
+}
+
+FARPROC WINAPI DetourGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
+{
+    FARPROC address = OriginalGetProcAddress(hModule, lpProcName);
+
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("GTA: GetProcAddress(0x%08x, %s) = 0x%08x", hModule, lpProcName, address);
+#endif
+
+    return address;
+}
 
 int WINAPI DetourMessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
 {
@@ -59,6 +83,8 @@ void Hooks::Create()
     FREEGTA_ASSERT(MH_Initialize() == MH_OK);
 
     // Install custom hooks
+    InstallHook(&reinterpret_cast<PVOID&>(OriginalLoadLibraryA), DetourLoadLibraryA, LoadLibraryA);
+    InstallHook(&reinterpret_cast<PVOID&>(OriginalGetProcAddress), DetourGetProcAddress, GetProcAddress);
     InstallHook(&reinterpret_cast<PVOID&>(OriginalMessageBoxA), DetourMessageBoxA, MessageBoxA);
 }
 
@@ -67,6 +93,8 @@ void Hooks::Destroy()
     FREEGTA_LOGINFO("Uninstalling hooks...");
 
     // Uninstall custom hooks
+    UninstallHook(&reinterpret_cast<PVOID&>(OriginalLoadLibraryA), DetourLoadLibraryA, LoadLibraryA);
+    UninstallHook(&reinterpret_cast<PVOID&>(OriginalGetProcAddress), DetourGetProcAddress, GetProcAddress);
     UninstallHook(&reinterpret_cast<PVOID&>(OriginalMessageBoxA), DetourMessageBoxA, MessageBoxA);
 
     FREEGTA_ASSERT(MH_Uninitialize() == MH_OK);
