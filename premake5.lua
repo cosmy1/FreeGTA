@@ -87,7 +87,7 @@ workspace("FreeGTA")
 
         files {
             "Code/DPlayX/Resources/*.*",
-            "Code/DPlayX/*.*",
+            "Code/DPlayX/*.*"
         }
 
     -- Game Project (DLL)
@@ -97,13 +97,20 @@ workspace("FreeGTA")
 
         links { "MinHook" }
 
+        defines {
+            "FREEGTA_HOOKS"
+        }
+
         files {
             "Code/FreeGTA/Resources/*.*",
+            "Code/FreeGTA/SciTech/Include/*.*",
+            "Code/FreeGTA/SciTech/MGL/*.*",
             "Code/FreeGTA/*.*"
         }
 
         includedirs {
-            "Vendor/MinHook/include/",
+            "Code/FreeGTA/SciTech/Include/",
+            "Vendor/MinHook/include/"
         }
 
     -- MinHook Project (StaticLib)
@@ -114,7 +121,7 @@ workspace("FreeGTA")
         files {
             "Vendor/MinHook/include/*.*",
             "Vendor/MinHook/src/hde/*.*",
-            "Vendor/MinHook/src/*.*",
+            "Vendor/MinHook/src/*.*"
         }
 
         removefiles { "Vendor/MinHook/src/hde/hde64.c" } -- Only x86 is supported
