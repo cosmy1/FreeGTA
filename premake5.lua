@@ -58,7 +58,7 @@ function projectCommon(projName)
             "_CRT_SECURE_NO_WARNINGS"
         }
         symbolspath("$(OutDir)$(TargetName).pdb")
-        
+
     filter { }
 
     includedirs { "Code" }
@@ -69,22 +69,22 @@ workspace("FreeGTA")
     location(".Gen")
 
     startproject("Launcher")
-    
+
     -- Launcher Project (Console)
     project("Launcher")
         kind("ConsoleApp")
         projectCommon("Launcher")
-        
+
         files {
             "Code/Launcher/Resources/*.*",
             "Code/Launcher/*.*"
         }
-        
+
     -- DPlay Wrapper Project (DLL)
     project("dplayx")
         kind("SharedLib")
         projectCommon("dplayx")
-        
+
         files {
             "Code/DPlayX/Resources/*.*",
             "Code/DPlayX/*.*",
@@ -95,8 +95,26 @@ workspace("FreeGTA")
         kind("SharedLib")
         projectCommon("FreeGTA")
 
+        links { "MinHook" }
+
         files {
             "Code/FreeGTA/Resources/*.*",
             "Code/FreeGTA/*.*"
         }
-        
+
+        includedirs {
+            "Vendor/MinHook/include/",
+        }
+
+    -- MinHook Project (StaticLib)
+    project("MinHook")
+        kind("StaticLib")
+        projectCommon("MinHook")
+
+        files {
+            "Vendor/MinHook/include/*.*",
+            "Vendor/MinHook/src/hde/*.*",
+            "Vendor/MinHook/src/*.*",
+        }
+
+        removefiles { "Vendor/MinHook/src/hde/hde64.c" } -- Only x86 is supported
