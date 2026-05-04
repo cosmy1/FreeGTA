@@ -21,30 +21,28 @@
 #include "Hooks.h"
 #include <Windows.h>
 
-Logger* g_loggerInstance = NULL;
+Logger  g_loggerInstance;
+Hooks   g_hooksInstance;
 
 BOOL CustomDllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
-        g_loggerInstance = new Logger();
-        g_loggerInstance->Open("FreeGTA.log");
+        g_loggerInstance.Open("FreeGTA.log");
 
         FREEGTA_LOGINFO("FreeGTA starting...");
 
         DisableThreadLibraryCalls(hinstDLL);
 
-        Hooks::Create();
+        g_hooksInstance.Create();
 
         FREEGTA_LOGINFO("FreeGTA started!");
     }
     else if (fdwReason == DLL_PROCESS_DETACH)
     {
-        Hooks::Destroy();
+        g_hooksInstance.Destroy();
 
         FREEGTA_LOGINFO("FreeGTA shut-down!");
-
-        delete g_loggerInstance;
     }
 
     return TRUE;

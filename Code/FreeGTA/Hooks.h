@@ -20,9 +20,26 @@
 
 #include "Utils.h"
 
+enum GTAVersion
+{
+    GTA_UNKNOWN,
+    GTA_1997_EU,
+    GTA_1998_US,
+    GTA_1998_US_REV1,
+    GTA_ROCKSTAR_FREE,
+    GTA_COLLECTION
+};
+
 class Hooks
 {
 public:
-    static void Create();
-    static void Destroy();
+    Hooks();
+    ~Hooks();
+
+    void Create();
+    void Destroy();
+
+private:
+    static GTAVersion   GetGTAVersion(size_t baseAddress);
+    static const char*  GetGTAVersionString(const GTAVersion& gtaVersion);
 };
