@@ -18,6 +18,7 @@
 
 #include "Logger.h"
 #include "ErrorHandler.h"
+#include "Hooks.h"
 #include <Windows.h>
 
 Logger* g_loggerInstance = NULL;
@@ -33,10 +34,14 @@ BOOL CustomDllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 
         DisableThreadLibraryCalls(hinstDLL);
 
+        Hooks::Create();
+
         FREEGTA_LOGINFO("FreeGTA started!");
     }
     else if (fdwReason == DLL_PROCESS_DETACH)
     {
+        Hooks::Destroy();
+
         FREEGTA_LOGINFO("FreeGTA shut-down!");
 
         delete g_loggerInstance;

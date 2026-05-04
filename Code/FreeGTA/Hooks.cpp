@@ -17,3 +17,20 @@
 */
 
 #include "Hooks.h"
+#include "ErrorHandler.h"
+#include "Logger.h"
+#include <MinHook.h>
+
+void Hooks::Create()
+{
+    FREEGTA_LOGINFO("Installing hooks...");
+
+    FREEGTA_ASSERT(MH_Initialize() == MH_OK);
+}
+
+void Hooks::Destroy()
+{
+    FREEGTA_LOGINFO("Uninstalling hooks...");
+
+    FREEGTA_ASSERT(MH_Uninitialize() == MH_OK);
+}

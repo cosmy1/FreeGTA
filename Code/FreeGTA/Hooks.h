@@ -17,3 +17,12 @@
 */
 
 #pragma once
+
+#include "Utils.h"
+
+class Hooks
+{
+public:
+    static void Create();
+    static void Destroy();
+};
