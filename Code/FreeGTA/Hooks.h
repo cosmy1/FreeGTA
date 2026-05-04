@@ -42,4 +42,7 @@ public:
 private:
     static GTAVersion   GetGTAVersion(size_t baseAddress);
     static const char*  GetGTAVersionString(const GTAVersion& gtaVersion);
+
+    static void InstallHook(void** trampolinePtr, void* detourPtr, void* targetPtr);
+    static void UninstallHook(void** trampolinePtr, void* detourPtr, void* targetPtr);
 };

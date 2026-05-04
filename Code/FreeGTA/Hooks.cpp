@@ -21,6 +21,22 @@
 #include "Logger.h"
 #include <MinHook.h>
 
+// Implementation
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+int(WINAPI* OriginalMessageBoxA)(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
+
+int WINAPI DetourMessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
+{
+    int retCode = OriginalMessageBoxA(hWnd, lpText, lpCaption, uType);
+
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("GTA: MessageBoxA(0x%08x, %s, %s, %d) = %d", hWnd, lpText, lpCaption, uType, retCode);
+#endif
+
+    return retCode;
+}
+
 Hooks::Hooks()
 {
 }
@@ -41,11 +57,17 @@ void Hooks::Create()
     FREEGTA_LOGINFO("Installing hooks...");
 
     FREEGTA_ASSERT(MH_Initialize() == MH_OK);
+
+    // Install custom hooks
+    InstallHook(&reinterpret_cast<PVOID&>(OriginalMessageBoxA), DetourMessageBoxA, MessageBoxA);
 }
 
 void Hooks::Destroy()
 {
     FREEGTA_LOGINFO("Uninstalling hooks...");
+
+    // Uninstall custom hooks
+    UninstallHook(&reinterpret_cast<PVOID&>(OriginalMessageBoxA), DetourMessageBoxA, MessageBoxA);
 
     FREEGTA_ASSERT(MH_Uninitialize() == MH_OK);
 }
@@ -95,4 +117,16 @@ const char* Hooks::GetGTAVersionString(const GTAVersion& gtaVersion)
     }
 
     return "Grand Theft Auto (Unknown Release)";
+}
+
+void Hooks::InstallHook(void** trampolinePtr, void* detourPtr, void* targetPtr)
+{
+    FREEGTA_ASSERT(MH_CreateHook(targetPtr, detourPtr, trampolinePtr) == MH_OK);
+    FREEGTA_ASSERT(MH_EnableHook(targetPtr) == MH_OK);
+}
+
+void Hooks::UninstallHook(void** trampolinePtr, void* detourPtr, void* targetPtr)
+{
+    FREEGTA_ASSERT(MH_DisableHook(targetPtr) == MH_OK);
+    FREEGTA_ASSERT(MH_RemoveHook(targetPtr) == MH_OK);
 }
