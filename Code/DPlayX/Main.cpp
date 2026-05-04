@@ -22,6 +22,9 @@ typedef LPVOID LPDIRECTPLAY;
 typedef LPVOID LPDPENUMDPCALLBACK;
 typedef LPVOID LPDPENUMDPCALLBACKA;
 
+// Implementation
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
     return TRUE;

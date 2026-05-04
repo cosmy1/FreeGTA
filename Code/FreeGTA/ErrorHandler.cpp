@@ -34,6 +34,9 @@ bool ErrorHandler::m_errorActive = false;
 INT8 ErrorHandler::m_minidumpError = MDE_NOERROR;
 const UINT32 kMaxLogBufferSize = 2048;
 
+// Implementation
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 void ErrorHandler::DebuggerPrint(const char* str)
 {
     OutputDebugString(str);

@@ -29,6 +29,9 @@
 #   define __DLL "FreeGTA.dll"
 #endif
 
+// Implementation
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 static bool FileExists(const char* path)
 {
 	DWORD attrib = GetFileAttributes(path);

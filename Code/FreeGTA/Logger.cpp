@@ -22,6 +22,9 @@
 const UINT32    kMaxLogBufferSize = 2048;
 static Logger*  g_logger = NULL;
 
+// Implementation
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 Logger::Logger() :
     m_logLevelType(LogLevelType::LLT_DEBUG)
 {

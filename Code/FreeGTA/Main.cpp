@@ -24,6 +24,9 @@
 Logger  g_loggerInstance;
 Hooks   g_hooksInstance;
 
+// Implementation
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 BOOL CustomDllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
     if (fdwReason == DLL_PROCESS_ATTACH)
