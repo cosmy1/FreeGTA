@@ -20,11 +20,19 @@
 
 #include "MGL.h"
 
-void* (*_MGL_malloc)(long size) = NULL;
-void  (*_MGL_free)(void* p)     = NULL;
+typedef void* (*MGL_mallocFn)(long size);
+typedef void (*MGL_freeFn)(void* p);
 
-void _MGL_memset(void* p, int c, long n); // Internal
-void _MGL_memsetw(void* p, int c, long n); // Internal
+#ifdef FREEGTA_HOOKS
+MGL_mallocFn& _MGL_malloc = *reinterpret_cast<MGL_mallocFn*>(0x00787160);
+MGL_freeFn& _MGL_free = *reinterpret_cast<MGL_freeFn*>(0x00787164);
+#else
+MGL_mallocFn _MGL_malloc = NULL;
+MGL_freeFn _MGL_free = NULL;
+#endif
+
+void _MGL_memset(void* p, int c, long n);   // Internal
+void _MGL_memsetw(void* p, int c, long n);  // Internal
 void _MGL_memsetl(void* p, long c, long n); // Internal
 
 // Implementation
@@ -139,14 +147,11 @@ void MGLAPI MGL_memcpyVIRTDST(void* p, void* s, long n)
 
 void __gta_MemSetHooks()
 {
-    //_MGL_malloc   0x00787160
-    //_MGL_free     0x00787164
     Hooks::InstallHook(reinterpret_cast<void*>(0x004910D0), _MGL_initMalloc, NULL);
     Hooks::InstallHook(reinterpret_cast<void*>(0x004910F0), MGL_memset, NULL);
     Hooks::InstallHook(reinterpret_cast<void*>(0x00491110), MGL_malloc, NULL);
     Hooks::InstallHook(reinterpret_cast<void*>(0x00491130), MGL_calloc, NULL);
     Hooks::InstallHook(reinterpret_cast<void*>(0x00491160), MGL_free, NULL);
-
     Hooks::InstallHook(reinterpret_cast<void*>(0x00494954), _MGL_memset, NULL);
     Hooks::InstallHook(reinterpret_cast<void*>(0x0049498E), _MGL_memsetw, NULL);
     Hooks::InstallHook(reinterpret_cast<void*>(0x004949C4), _MGL_memsetl, NULL);
