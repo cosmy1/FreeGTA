@@ -39,10 +39,10 @@ public:
     void Create();
     void Destroy();
 
+    static void InstallHook(void* targetPtr, void* detourPtr, void** trampolinePtr);
+    static void UninstallHook(void* targetPtr);
+
 private:
     static GTAVersion   GetGTAVersion(size_t baseAddress);
     static const char*  GetGTAVersionString(const GTAVersion& gtaVersion);
-
-    static void InstallHook(void** trampolinePtr, void* detourPtr, void* targetPtr);
-    static void UninstallHook(void** trampolinePtr, void* detourPtr, void* targetPtr);
 };

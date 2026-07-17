@@ -83,9 +83,9 @@ void Hooks::Create()
     FREEGTA_ASSERT(MH_Initialize() == MH_OK);
 
     // Install custom hooks
-    InstallHook(&reinterpret_cast<PVOID&>(OriginalLoadLibraryA), DetourLoadLibraryA, LoadLibraryA);
-    InstallHook(&reinterpret_cast<PVOID&>(OriginalGetProcAddress), DetourGetProcAddress, GetProcAddress);
-    InstallHook(&reinterpret_cast<PVOID&>(OriginalMessageBoxA), DetourMessageBoxA, MessageBoxA);
+    InstallHook(LoadLibraryA, DetourLoadLibraryA, &reinterpret_cast<PVOID&>(OriginalLoadLibraryA));
+    InstallHook(GetProcAddress, DetourGetProcAddress, &reinterpret_cast<PVOID&>(OriginalGetProcAddress));
+    InstallHook(MessageBoxA, DetourMessageBoxA, &reinterpret_cast<PVOID&>(OriginalMessageBoxA));
 }
 
 void Hooks::Destroy()
@@ -93,11 +93,23 @@ void Hooks::Destroy()
     FREEGTA_LOGINFO("Uninstalling hooks...");
 
     // Uninstall custom hooks
-    UninstallHook(&reinterpret_cast<PVOID&>(OriginalLoadLibraryA), DetourLoadLibraryA, LoadLibraryA);
-    UninstallHook(&reinterpret_cast<PVOID&>(OriginalGetProcAddress), DetourGetProcAddress, GetProcAddress);
-    UninstallHook(&reinterpret_cast<PVOID&>(OriginalMessageBoxA), DetourMessageBoxA, MessageBoxA);
+    UninstallHook(LoadLibraryA);
+    UninstallHook(GetProcAddress);
+    UninstallHook(MessageBoxA);
 
     FREEGTA_ASSERT(MH_Uninitialize() == MH_OK);
+}
+
+void Hooks::InstallHook(void* targetPtr, void* detourPtr, void** trampolinePtr)
+{
+    FREEGTA_ASSERT(MH_CreateHook(targetPtr, detourPtr, trampolinePtr) == MH_OK);
+    FREEGTA_ASSERT(MH_EnableHook(targetPtr) == MH_OK);
+}
+
+void Hooks::UninstallHook(void* targetPtr)
+{
+    FREEGTA_ASSERT(MH_DisableHook(targetPtr) == MH_OK);
+    FREEGTA_ASSERT(MH_RemoveHook(targetPtr) == MH_OK);
 }
 
 GTAVersion Hooks::GetGTAVersion(size_t baseAddress)
@@ -145,16 +157,4 @@ const char* Hooks::GetGTAVersionString(const GTAVersion& gtaVersion)
     }
 
     return "Grand Theft Auto (Unknown Release)";
-}
-
-void Hooks::InstallHook(void** trampolinePtr, void* detourPtr, void* targetPtr)
-{
-    FREEGTA_ASSERT(MH_CreateHook(targetPtr, detourPtr, trampolinePtr) == MH_OK);
-    FREEGTA_ASSERT(MH_EnableHook(targetPtr) == MH_OK);
-}
-
-void Hooks::UninstallHook(void** trampolinePtr, void* detourPtr, void* targetPtr)
-{
-    FREEGTA_ASSERT(MH_DisableHook(targetPtr) == MH_OK);
-    FREEGTA_ASSERT(MH_RemoveHook(targetPtr) == MH_OK);
 }
