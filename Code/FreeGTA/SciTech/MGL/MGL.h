@@ -16,7 +16,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// This file is an attempt to reconstruct the original MGraph library used in GTA.
+// This file is part of an effort to reconstruct the original MGL library used by GTA.
+// Some portions of this file are adapted from the SciTech MGL GPL source: https://github.com/kendallb/scitech-mgl
 
 #pragma once
 

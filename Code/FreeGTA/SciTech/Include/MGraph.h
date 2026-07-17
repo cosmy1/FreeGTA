@@ -16,17 +16,57 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// This file is an attempt to reconstruct the original MGraph library used in GTA.
+// This file is part of an effort to reconstruct the original MGL library used by GTA.
+// Some portions of this file are adapted from the SciTech MGL GPL source: https://github.com/kendallb/scitech-mgl
 
 #pragma once
 
 #ifdef FREEGTA_HOOKS
-
 #include "Hooks.h"
-
+#include "Logger.h"
 #endif
 
 #define MGLAPI __cdecl
+
+enum MGL_errorType
+{
+    grOK = 0,
+    grNoInit = -1,
+    grNotDetected = -2,
+    grDriverNotFound = -3,
+    grBadDriver = -4,
+    grLoadMem = -5,
+    grInvalidMode = -6,
+    grError = -8,
+    grInvalidName = -9,
+    grNoMem = -10,
+    grNoModeSupport = -11,
+    grInvalidFont = -12,
+    grBadFontFile = -13,
+    grFontNotFound = -14,
+    grOldDriver = -15,
+    grInvalidDevice = -16,
+    grInvalidDC = -17,
+    grInvalidCursor = -18,
+    grCursorNotFound = -19,
+    grInvalidIcon = -20,
+    grIconNotFound = -21,
+    grInvalidBitmap = -22,
+    grBitmapNotFound = -23,
+    grZbufferTooBig = -24,
+    grNewFontFile = -25,
+    grNoDoubleBuff = -26,
+    grNoHardwareBlt = -28,
+    grNoOffscreenMem = -29,
+    grInvalidPF = -30,
+    grLastError = -31,
+};
+
+// MGraph.cpp
+//======================================================
+int MGLAPI MGL_result();
+void MGLAPI MGL_setResult(int result);
+const char* MGLAPI MGL_errorMsg(int err);
 
 // MemSet.cpp
 //======================================================

@@ -90,8 +90,10 @@ void Hooks::Create()
 #ifdef FREEGTA_HOOKS
     // SciTech MGL reimplementation hook installers (defined in SciTech/MGL/*.cpp)
     void __gta_MemSetHooks();
+    void __gta_MGraphHooks();
 
     __gta_MemSetHooks();
+    __gta_MGraphHooks();
 #endif
 }
 
