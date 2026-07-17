@@ -86,6 +86,13 @@ void Hooks::Create()
     InstallHook(LoadLibraryA, DetourLoadLibraryA, &reinterpret_cast<PVOID&>(OriginalLoadLibraryA));
     InstallHook(GetProcAddress, DetourGetProcAddress, &reinterpret_cast<PVOID&>(OriginalGetProcAddress));
     InstallHook(MessageBoxA, DetourMessageBoxA, &reinterpret_cast<PVOID&>(OriginalMessageBoxA));
+
+#ifdef FREEGTA_HOOKS
+    // SciTech MGL reimplementation hook installers (defined in SciTech/MGL/*.cpp)
+    void __gta_MemSetHooks();
+
+    __gta_MemSetHooks();
+#endif
 }
 
 void Hooks::Destroy()

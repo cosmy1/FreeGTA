@@ -16,4 +16,19 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+// This file is an attempt to reconstruct the original MGraph library used in GTA.
+
 #pragma once
+
+// Disable unicode support in MGL
+#ifdef UNICODE
+#   undef UNICODE
+#endif
+
+#include <Windows.h>
+
+#include "MGraph.h"
+
+// MemSet.cpp
+//======================================================
+void _MGL_initMalloc();

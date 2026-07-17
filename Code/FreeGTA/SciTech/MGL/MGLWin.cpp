@@ -16,6 +16,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+// This file is an attempt to reconstruct the original MGraph library used in GTA.
+
 #include "MGL.h"
 
 // Implementation

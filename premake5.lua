@@ -109,6 +109,7 @@ workspace("FreeGTA")
         }
 
         includedirs {
+            "Code/FreeGTA/",
             "Code/FreeGTA/SciTech/Include/",
             "Vendor/MinHook/include/"
         }

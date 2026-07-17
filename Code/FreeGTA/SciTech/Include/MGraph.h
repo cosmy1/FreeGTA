@@ -16,4 +16,25 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+// This file is an attempt to reconstruct the original MGraph library used in GTA.
+
 #pragma once
+
+#ifdef FREEGTA_HOOKS
+
+#include "Hooks.h"
+
+#endif
+
+#define MGLAPI __cdecl
+
+// MemSet.cpp
+//======================================================
+void* MGLAPI MGL_malloc(long size);
+void* MGLAPI MGL_calloc(long size, long n);
+void MGLAPI MGL_free(void* p);
+
+void MGLAPI MGL_memset(void* s, int c, long n);
+void MGLAPI MGL_memcpy(void* dst, void* src, long n);
+void MGLAPI MGL_memcpyVIRTSRC(void* dst, void* src, long n);
+void MGLAPI MGL_memcpyVIRTDST(void* dst, void* src, long n);

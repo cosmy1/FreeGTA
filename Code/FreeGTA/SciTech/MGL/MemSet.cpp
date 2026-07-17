@@ -16,7 +16,110 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+// This file is an attempt to reconstruct the original MGraph library used in GTA.
+
 #include "MGL.h"
+
+void* (*_MGL_malloc)(long size) = NULL;
+void  (*_MGL_free)(void* p)     = NULL;
+
+void _MGL_memset(void* p, int c, long n); // Internal
+void _MGL_memsetw(void* p, int c, long n); // Internal
+void _MGL_memsetl(void* p, long c, long n); // Internal
 
 // Implementation
 //////////////////////////////////////////////////////////////////////////////////////////////////
+
+static void* WrapMalloc(long size)
+{
+    return malloc(static_cast<size_t>(size));
+}
+
+static void WrapFree(void* p)
+{
+    free(p);
+}
+
+void _MGL_initMalloc()
+{
+    _MGL_malloc = WrapMalloc;
+    _MGL_free = WrapFree;
+}
+
+void MGLAPI MGL_memset(void* p, int c, long n)
+{
+    _MGL_memset(p, c, n);
+}
+
+void* MGLAPI MGL_malloc(long size)
+{
+    return _MGL_malloc(size);
+}
+
+void* MGLAPI MGL_calloc(long s, long n)
+{
+    void* p = MGL_malloc(s * n);
+    MGL_memset(p, 0, s * n);
+    return p;
+}
+
+void MGLAPI MGL_free(void* p)
+{
+    _MGL_free(p);
+}
+
+// Originally assembly routines
+void _MGL_memset(void* p, int c, long n)
+{
+    memset(p, c, n);
+}
+
+void _MGL_memsetw(void* p, int c, long n)
+{
+    memset(p, c, n);
+}
+
+void _MGL_memsetl(void* p, long c, long n)
+{
+    memset(p, c, n);
+}
+
+void MGLAPI MGL_memcpy(void* p, void* s, long n)
+{
+    memcpy(p, s, n);
+}
+
+void MGLAPI MGL_memcpyVIRTSRC(void* p, void* s, long n)
+{
+    memcpy(p, s, n);
+}
+
+void MGLAPI MGL_memcpyVIRTDST(void* p, void* s, long n)
+{
+    memcpy(p, s, n);
+}
+
+// Hooking
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifdef FREEGTA_HOOKS
+
+void __gta_MemSetHooks()
+{
+    //_MGL_malloc   0x00787160
+    //_MGL_free     0x00787164
+    Hooks::InstallHook(reinterpret_cast<void*>(0x004910D0), _MGL_initMalloc, NULL);
+    Hooks::InstallHook(reinterpret_cast<void*>(0x004910F0), MGL_memset, NULL);
+    Hooks::InstallHook(reinterpret_cast<void*>(0x00491110), MGL_malloc, NULL);
+    Hooks::InstallHook(reinterpret_cast<void*>(0x00491130), MGL_calloc, NULL);
+    Hooks::InstallHook(reinterpret_cast<void*>(0x00491160), MGL_free, NULL);
+
+    Hooks::InstallHook(reinterpret_cast<void*>(0x00494954), _MGL_memset, NULL);
+    Hooks::InstallHook(reinterpret_cast<void*>(0x0049498E), _MGL_memsetw, NULL);
+    Hooks::InstallHook(reinterpret_cast<void*>(0x004949C4), _MGL_memsetl, NULL);
+    Hooks::InstallHook(reinterpret_cast<void*>(0x004949DC), MGL_memcpy, NULL);
+    Hooks::InstallHook(reinterpret_cast<void*>(0x00494A00), MGL_memcpyVIRTSRC, NULL);
+    Hooks::InstallHook(reinterpret_cast<void*>(0x00494A30), MGL_memcpyVIRTDST, NULL);
+}
+
+#endif
