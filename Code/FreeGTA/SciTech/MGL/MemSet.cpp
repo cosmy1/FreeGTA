@@ -42,22 +42,34 @@ static void WrapFree(void* p)
 
 void _MGL_initMalloc()
 {
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("_MGL_initMalloc()");
+#endif
     _MGL_malloc = WrapMalloc;
     _MGL_free = WrapFree;
 }
 
 void MGLAPI MGL_memset(void* p, int c, long n)
 {
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("MGL_memset()");
+#endif
     _MGL_memset(p, c, n);
 }
 
 void* MGLAPI MGL_malloc(long size)
 {
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("MGL_malloc()");
+#endif
     return _MGL_malloc(size);
 }
 
 void* MGLAPI MGL_calloc(long s, long n)
 {
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("MGL_calloc()");
+#endif
     void* p = MGL_malloc(s * n);
     MGL_memset(p, 0, s * n);
     return p;
@@ -65,37 +77,58 @@ void* MGLAPI MGL_calloc(long s, long n)
 
 void MGLAPI MGL_free(void* p)
 {
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("MGL_free()");
+#endif
     _MGL_free(p);
 }
 
 // Originally assembly routines
 void _MGL_memset(void* p, int c, long n)
 {
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("_MGL_memset()");
+#endif
     memset(p, c, n);
 }
 
 void _MGL_memsetw(void* p, int c, long n)
 {
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("_MGL_memsetw()");
+#endif
     memset(p, c, n);
 }
 
 void _MGL_memsetl(void* p, long c, long n)
 {
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("_MGL_memsetl()");
+#endif
     memset(p, c, n);
 }
 
 void MGLAPI MGL_memcpy(void* p, void* s, long n)
 {
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("MGL_memcpy()");
+#endif
     memcpy(p, s, n);
 }
 
 void MGLAPI MGL_memcpyVIRTSRC(void* p, void* s, long n)
 {
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("MGL_memcpyVIRTSRC()");
+#endif
     memcpy(p, s, n);
 }
 
 void MGLAPI MGL_memcpyVIRTDST(void* p, void* s, long n)
 {
+#ifdef _DEBUG
+    FREEGTA_LOGDEBUG("MGL_memcpyVIRTDST()");
+#endif
     memcpy(p, s, n);
 }
 
